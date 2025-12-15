@@ -1,0 +1,11 @@
+{
+  "directive": "All purpose master coding and ",
+  "entityCount": 200,
+  "speed": 3,
+  "colors": [
+    "#00f3ff",
+    "#9333ea",
+    "#ffffff"
+  ],
+  "linkColor": "rgba(0, 243, 255, OPACITY)"
+}

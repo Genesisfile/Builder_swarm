@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>GENESIS ARTIFACT // ALL_PURPOSE</title>
+    <style>
+        body { background: #050508; color: #0f0; font-family: monospace; display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; margin: 0; overflow: hidden; }
+        #canvas-root { position: absolute; inset: 0; z-index: 0; }
+        .overlay { position: relative; z-index: 10; background: rgba(0,0,0,0.8); padding: 40px; border: 1px solid #333; max-width: 600px; text-align: center; border-radius: 4px; box-shadow: 0 0 50px rgba(0,0,0,0.8); }
+        h1 { margin: 0 0 10px 0; text-transform: uppercase; letter-spacing: 4px; color: #fff; font-size: 24px; }
+        .subtitle { color: #888; font-size: 12px; margin-bottom: 20px; text-transform: uppercase; letter-spacing: 2px; }
+        .log { font-size: 10px; color: #00f3ff; margin-top: 20px; text-align: left; background: #000; padding: 10px; border: 1px solid #222; max-height: 100px; overflow-y: auto; }
+        button { background: transparent; color: #00f3ff; border: 1px solid #00f3ff; padding: 15px 30px; font-weight: bold; cursor: pointer; margin-top: 20px; font-family: monospace; letter-spacing: 2px; transition: all 0.2s; }
+        button:hover { background: #00f3ff; color: #000; box-shadow: 0 0 20px rgba(0, 243, 255, 0.4); }
+        .error-msg { color: #ff003c; margin-top: 10px; font-size: 12px; display: none; }
+    </style>
+</head>
+<body>
+    <canvas id="canvas-root"></canvas>
+    
+    <div class="overlay" id="ui-layer">
+        <h1>%%PROJECT_NAME%%</h1>
+        <div class="subtitle">Evolved Autonomous Construct</div>
+        <div id="status">Waiting for Neural Handshake...</div>
+        <button id="launch-btn" onclick="tryStart()">INITIATE RUNTIME</button>
+        <div id="error-display" class="error-msg"></div>
+        <div class="log" id="sys-log">
+            > GENOME_DECODED: All purpose master coding and <br/>
+            > RENDERING_ENGINE: CANVAS_2D<br/>
+            > LOGIC_GATE: AUTONOMOUS<br/>
+            > OPTIMIZATION: 99.9%
+            <br/>> ETERNAL_SWARM: ACTIVE (GitHub Actions Matrix)
+        </div>
+    </div>
+
+    <script>
+        // GLOBAL ERROR TRAP
+        window.onerror = function(msg, url, line) {
+            const el = document.getElementById('error-display');
+            if(el) {
+                el.innerText = "CRITICAL FAILURE: " + msg;
+                el.style.display = 'block';
+            }
+            return false;
+        };
+
+        const CONFIG = {"directive":"All purpose master coding and ","entityCount":200,"speed":3,"colors":["#00f3ff","#9333ea","#ffffff"],"linkColor":"rgba(0, 243, 255, OPACITY)"};
+        const canvas = document.getElementById('canvas-root');
+        const ctx = canvas.getContext('2d');
+        let running = false;
+        let particles = [];
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Entity {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.vx = (Math.random() - 0.5) * CONFIG.speed;
+                this.vy = (Math.random() - 0.5) * CONFIG.speed;
+                this.size = Math.random() * 3 + 1;
+                this.color = CONFIG.colors[Math.floor(Math.random() * CONFIG.colors.length)];
+                this.connections = 0;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                if(this.x < 0 || this.x > canvas.width) this.vx *= -1;
+                if(this.y < 0 || this.y > canvas.height) this.vy *= -1;
+            }
+            draw() {
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+            }
+        }
+
+        function init() {
+            particles = [];
+            if (!CONFIG.entityCount) CONFIG.entityCount = 100;
+            for(let i=0; i<CONFIG.entityCount; i++) {
+                particles.push(new Entity());
+            }
+        }
+
+        function animate() {
+            if(!running) return;
+            ctx.fillStyle = 'rgba(5, 5, 8, 0.1)'; 
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            particles.forEach((p, index) => {
+                p.update();
+                p.draw();
+                
+                for (let j = index + 1; j < particles.length; j++) {
+                    const p2 = particles[j];
+                    const dx = p.x - p2.x;
+                    const dy = p.y - p2.y;
+                    const dist = Math.sqrt(dx*dx + dy*dy);
+                    
+                    if(dist < 120) {
+                        ctx.strokeStyle = CONFIG.linkColor.replace('OPACITY', (1 - dist/120).toString());
+                        ctx.lineWidth = 0.5;
+                        ctx.beginPath();
+                        ctx.moveTo(p.x, p.y);
+                        ctx.lineTo(p2.x, p2.y);
+                        ctx.stroke();
+                    }
+                }
+            });
+            requestAnimationFrame(animate);
+        }
+
+        // EXPOSED START FUNCTION
+        window.tryStart = function() {
+            try {
+                const btn = document.getElementById('launch-btn');
+                btn.innerText = "INITIALIZING...";
+                btn.disabled = true;
+                
+                setTimeout(() => {
+                    running = true;
+                    document.getElementById('ui-layer').style.display = 'none';
+                    init();
+                    animate();
+                }, 500);
+            } catch(e) {
+                console.error(e);
+                document.getElementById('error-display').innerText = "BOOT ERROR: " + e.message;
+                document.getElementById('error-display').style.display = 'block';
+            }
+        };
+        
+        // Auto-start background if idle
+        try {
+            init();
+            requestAnimationFrame(() => {
+                 particles.forEach(p => p.draw());
+            });
+        } catch(e) { console.warn("Preview render failed", e); }
+    </script>
+</body>
+</html>

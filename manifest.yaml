@@ -1,0 +1,4 @@
+project: ALL_PURPOSE
+version: 1.0.0-GENESIS
+build_strategy: ETERNAL_SWARM_LOOP
+optimization_score: 99.4
